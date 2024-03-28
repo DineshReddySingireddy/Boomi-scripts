@@ -1,0 +1,133 @@
+load("nashorn:mozilla_compat.js");
+
+importClass(com.boomi.execution.ExecutionUtil);
+importClass(java.util.Properties);
+importClass(java.io.InputStream);
+importClass(java.io.ByteArrayInputStream);
+importClass(java.util.Scanner);
+
+function getStream(num) {
+    var s = new Scanner(dataContext.getStream(num)).useDelimiter("\\A");
+    return s.hasNext() ? s.next() : "";
+}
+
+function storeStream(str, props) {
+    props = !props ? new Properties() : props;
+    dataContext.storeStream(new ByteArrayInputStream(str.getBytes("UTF-8")), props);
+}
+
+var input = getStream(0);
+var props = dataContext.getProperties(0);
+var jsonData = JSON.parse(input);
+
+var groupedStructures = {};
+
+jsonData.GETCLASSLIST.forEach(function (getclass) {
+    var ActivityHostKey = getclass.RDBActivityHostKey;
+
+    if (!groupedStructures.hasOwnProperty(ActivityHostKey)) {
+        groupedStructures[ActivityHostKey] = {
+            "study_period_code": getclass.StudyPeriodCd,
+            "study_period_desc": getclass.StudyPeriodDesc,
+            "study_package_code": getclass.StudyPackageCd,
+            "study_package_full_title": getclass.StudyPackageFullTitle,
+            "location_code": getclass.LocationCd,
+            "location": getclass.LocationDesc,
+            "class_number": getclass.ClassNo,
+            "availability_year": getclass.AvailabilityYear,
+            "activity_type_code": getclass.ActivityTypeCd,
+            "activity_type": getclass.ActivityTypeDesc,
+            "class_registration_status": getclass.ClassRegistrationStatus,
+            "closed_registration": getclass.ClosedRegistrationFg,
+            "max_class_size": getclass.MaxClassSize,
+            "planned_size": getclass.PlannedSize,
+            "total_registered": getclass.TotalRegistered,
+            "total_places_available": getclass.TotalPlacesAvailable,
+            "total_reserved": getclass.TotalReserved,
+            "total_reserved_available": getclass.TotalReservedAvailable,
+            "duration": getclass.Duration,
+            "duration_in_minutes": getclass.DurationInMinutes,
+            "teaching_week_pattern_label": getclass.WeekLabel,
+            "host_key": getclass.LocationHostKey,
+            "class_location": getclass.Location,
+            "room_size": getclass.RoomSize,
+			"occurrences": {},
+			"staff": {},
+            "students": {}
+        };
+    }
+	if (getclass.Occurrence) {
+    var occurrenceKey = getclass.StartDateTime + "|" + getclass.Occurrence;
+    groupedStructures[ActivityHostKey].occurrences[occurrenceKey] = {
+        "start_date_time": getclass.StartDateTime,
+        "end_date_time": getclass.EndDateTime,
+        "scheduled_day": getclass.ScheduledDay,
+        "day": getclass.Day,
+        "week": getclass.Week,
+        "occurrence": getclass.Occurrence
+    };
+	}
+	if (getclass.StaffId) {
+	var staffKey = getclass.StaffId;
+    groupedStructures[ActivityHostKey].staff[staffKey] = {
+        "staff_id": getclass.StaffId,
+        "staff_name": getclass.StaffName,
+        "staff_title": getclass.StaffTitle,
+        "staff_email": getclass.Email
+    };
+	}
+	if (getclass.Username) {
+	var studentKey = getclass.Username;
+    groupedStructures[ActivityHostKey].students[studentKey] = {
+        "username": getclass.Username,
+        "student_id": getclass.StudentId,
+        "student_alt_id": getclass.StudentAltId,
+        "student_given_name": getclass.StudentGivenName,
+        "student_family_name": getclass.StudentFamilyName,
+        "student_email": getclass.StudentEmail,
+        "parent_study_package_code": getclass.ParentStudyPackageCd,
+        "parent_study_package_full_title": getclass.ParentStudyPackageFullTitle
+    };
+	}
+});
+
+var output = Object.keys(groupedStructures).map(function (ActivityHostKey) {
+    return {
+        "RDBActivityHostKey": ActivityHostKey,
+        "study_period_code": groupedStructures[ActivityHostKey].study_period_code,
+        "study_period_desc": groupedStructures[ActivityHostKey].study_period_desc,
+        "study_package_code": groupedStructures[ActivityHostKey].study_package_code,
+        "study_package_full_title": groupedStructures[ActivityHostKey].study_package_full_title,
+        "location_code": groupedStructures[ActivityHostKey].location_code,
+        "location": groupedStructures[ActivityHostKey].location,
+        "class_number": groupedStructures[ActivityHostKey].class_number,
+        "availability_year": groupedStructures[ActivityHostKey].availability_year,
+        "activity_type_code": groupedStructures[ActivityHostKey].activity_type_code,
+        "activity_type": groupedStructures[ActivityHostKey].activity_type,
+        "class_registration_status": groupedStructures[ActivityHostKey].class_registration_status,
+        "closed_registration": groupedStructures[ActivityHostKey].closed_registration,
+        "max_class_size": groupedStructures[ActivityHostKey].max_class_size,
+        "planned_size": groupedStructures[ActivityHostKey].planned_size,
+        "total_registered": groupedStructures[ActivityHostKey].total_registered,
+        "total_places_available": groupedStructures[ActivityHostKey].total_places_available,
+        "total_reserved": groupedStructures[ActivityHostKey].total_reserved,
+        "total_reserved_available": groupedStructures[ActivityHostKey].total_reserved_available,
+        "duration": groupedStructures[ActivityHostKey].duration,
+        "duration_in_minutes": groupedStructures[ActivityHostKey].duration_in_minutes,
+        "teaching_week_pattern_label": groupedStructures[ActivityHostKey].teaching_week_pattern_label,
+        "host_key": groupedStructures[ActivityHostKey].host_key,
+        "class_location": groupedStructures[ActivityHostKey].class_location,
+        "room_size": groupedStructures[ActivityHostKey].room_size,
+        "occurrences": Object.keys(groupedStructures[ActivityHostKey].occurrences || {}).map(function (occurrenceKey) {
+            return groupedStructures[ActivityHostKey].occurrences[occurrenceKey];
+        }),
+		"staff": Object.keys(groupedStructures[ActivityHostKey].staff || {}).map(function (staffKey) {
+            return groupedStructures[ActivityHostKey].staff[staffKey];
+        }),
+		"students": Object.keys(groupedStructures[ActivityHostKey].students || {}).map(function (studentKey) {
+            return groupedStructures[ActivityHostKey].students[studentKey];
+        })
+    };
+});
+
+storeStream(JSON.stringify(output), props);

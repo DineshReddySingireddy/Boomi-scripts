@@ -1,0 +1,174 @@
+[{
+        "RDBActivityHostKey": "ACCT11059~T1~DST~1~Wks~A/012",
+        "study_period_code": "HT1",
+        "study_period_desc": "HE Term 1",
+        "study_package_code": "ACCT11059",
+        "study_package_full_title": "Accounting, Learning and Online Communication",
+        "location_code": "DST",
+        "location": "Online",
+        "class_number": 1,
+        "availability_year": 2021,
+        "activity_type_code": "50",
+        "activity_type": "Workshop",
+        "class_registration_status": "Student Self-Service Class Registration",
+        "closed_registration": "N",
+        "max_class_size": 71,
+        "planned_size": 71,
+        "total_registered": 70,
+        "total_places_available": 1,
+        "total_reserved": 0,
+        "total_reserved_available": 0,
+        "duration": 4,
+        "duration_in_minutes": 120,
+        "teaching_week_pattern_label": "1-5, 6-12",
+        "host_key": "DST~Zoom/19",
+        "class_location": "Online Classroom",
+        "room_size": 1000,
+        "occurrences": [{
+                "start_date_time": "2021-03-10 11:00:00.0",
+                "end_date_time": "2021-03-17 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 11,
+                "occurrence": 1
+            }, {
+                "start_date_time": "2021-03-24 11:00:00.0",
+                "end_date_time": "2021-03-24 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 12,
+                "occurrence": 3
+            }
+        ],
+        "staff": [{
+                "staff_id": "405092",
+                "staff_name": "Turner, Martin Craig",
+                "staff_title": "Dr Martin Turner",
+                "staff_email": "m.turner@cqu.edu.au"
+            }, {
+                "staff_id": "405093",
+                "staff_name": "Turner, Martin Craig",
+                "staff_title": "Dr Martin Turner",
+                "staff_email": "m.turner@cqu.edu.au"
+            }
+        ],
+        "students": [{
+                "username": "12167772",
+                "student_id": "12167772",
+                "student_given_name": "Joseph",
+                "student_family_name": "McEldowney",
+                "student_email": "noone-12167772@cqu.edu.au",
+                "parent_study_package_code": "CL86",
+                "parent_study_package_full_title": "Bachelor of Business"
+            }
+        ]
+    }, {
+        "RDBActivityHostKey": "ACCT11059~T1~DST~1~Wks~A/01",
+        "study_period_code": "HT1",
+        "study_period_desc": "HE Term 1",
+        "study_package_code": "ACCT11059",
+        "study_package_full_title": "Accounting, Learning and Online Communication",
+        "location_code": "DST",
+        "location": "Online",
+        "class_number": 1,
+        "availability_year": 2021,
+        "activity_type_code": "50",
+        "activity_type": "Workshop",
+        "class_registration_status": "Student Self-Service Class Registration",
+        "closed_registration": "N",
+        "max_class_size": 71,
+        "planned_size": 71,
+        "total_registered": 70,
+        "total_places_available": 1,
+        "total_reserved": 0,
+        "total_reserved_available": 0,
+        "duration": 4,
+        "duration_in_minutes": 120,
+        "teaching_week_pattern_label": "1-5, 6-12",
+        "host_key": "DST~Zoom/19",
+        "class_location": "Online Classroom",
+        "room_size": 1000,
+        "occurrences": [{
+                "start_date_time": "2021-03-31 11:00:00.0",
+                "end_date_time": "2021-03-31 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 13,
+                "occurrence": 4
+            }, {
+                "start_date_time": "2021-04-07 11:00:00.0",
+                "end_date_time": "2021-04-07 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 14,
+                "occurrence": 5
+            }, {
+                "start_date_time": "2021-04-21 11:00:00.0",
+                "end_date_time": "2021-04-21 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 16,
+                "occurrence": 6
+            }, {
+                "start_date_time": "2021-04-28 11:00:00.0",
+                "end_date_time": "2021-04-28 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 17,
+                "occurrence": 7
+            }, {
+                "start_date_time": "2021-05-05 11:00:00.0",
+                "end_date_time": "2021-05-05 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 18,
+                "occurrence": 8
+            }, {
+                "start_date_time": "2021-05-12 11:00:00.0",
+                "end_date_time": "2021-05-12 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 19,
+                "occurrence": 9
+            }, {
+                "start_date_time": "2021-05-19 11:00:00.0",
+                "end_date_time": "2021-05-19 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 20,
+                "occurrence": 10
+            }, {
+                "start_date_time": "2021-05-26 11:00:00.0",
+                "end_date_time": "2021-05-26 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 21,
+                "occurrence": 11
+            }, {
+                "start_date_time": "2021-06-02 11:00:00.0",
+                "end_date_time": "2021-06-02 13:00:00.0",
+                "scheduled_day": 2,
+                "day": 2,
+                "week": 22,
+                "occurrence": 12
+            }
+        ],
+        "staff": [{
+                "staff_id": "405092",
+                "staff_name": "Turner, Martin Craig",
+                "staff_title": "Dr Martin Turner",
+                "staff_email": "m.turner@cqu.edu.au"
+            }
+        ],
+        "students": [{
+                "username": "12167772",
+                "student_id": "12167772",
+                "student_given_name": "Joseph",
+                "student_family_name": "McEldowney",
+                "student_email": "noone-12167772@cqu.edu.au",
+                "parent_study_package_code": "CL86",
+                "parent_study_package_full_title": "Bachelor of Business"
+            }
+        ]
+    }
+]

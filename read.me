@@ -1,0 +1,115 @@
+this script does all mule logic below:
+
+output application/json 
+
+--- 
+
+if (attributes.statusCode != 204) ( 
+
+((payload filter (item) -> (item.deleted == null)) groupBy $.rdb_activity_host_key) pluck { 
+
+    study_package_code: $.study_package_code[0], 
+
+    study_package_full_title: $.study_package_full_title[0], 
+
+    study_period_code: $.study_period_code[0], 
+
+    study_period: $.study_period[0], 
+
+    location_code: $.location_code[0], 
+
+    location: $.location[0], 
+
+    class_number: $.class_number[0], 
+
+    activity_type_code: $.activity_type_code[0], 
+
+    activity_type: $.activity_type[0], 
+
+    class_registration_status: $.class_registration_status[0], 
+
+    closed_registration: $.closed_registration[0], 
+
+    max_class_size: $.max_class_size[0], 
+
+    planned_size: $.planned_size[0], 
+
+    total_registered: $.total_registered[0], 
+
+    total_places_available: $.total_places_available[0], 
+
+    total_reserved: $.total_reserved[0], 
+
+    total_reserved_available: $.total_reserved_available[0], 
+
+    duration: $.duration[0], 
+
+    duration_in_minutes: $.duration_in_minutes[0], 
+
+    teaching_week_pattern_label: $.teaching_week_pattern_label[0], 
+
+    host_key: $.host_key[0], 
+
+    class_location: $.class_location[0], 
+
+    room_size: $.room_size[0], 
+
+    rdb_activity_host_key: $.rdb_activity_host_key[0], 
+
+    (occurrences: $ distinctBy ($.occurrence ++ $.start_date_time) map (item) -> { 
+
+        start_date_time: item.start_date_time, 
+
+        end_date_time: item.end_date_time, 
+
+        day: item.day, 
+
+        week: item.week, 
+
+        occurrence: item.occurrence, 
+
+        scheduled_day: item.scheduled_day 
+
+    }) if ($.occurrence[0] != null), 
+
+    (occurrences: []) if ($.occurrence[0] == null), 
+
+    (staff: $ distinctBy $.staff_id map (item) -> { 
+
+        staff_id: item.staff_id, 
+
+        staff_name: item.staff_name, 
+
+        staff_title: item.staff_title, 
+
+        staff_email: item.staff_email 
+
+    }) if ($.staff_id[0] != null), 
+
+    (staff: []) if ($.staff_id[0] == null), 
+
+    (students: $ distinctBy $.username map (item) -> { 
+
+        username: item.username, 
+
+        student_id: item.student_id, 
+
+        student_alt_id: item.student_alt_id, 
+
+        student_given_name: item.student_given_name, 
+
+        student_family_name: item.student_family_name, 
+
+        student_email: item.student_email, 
+
+        parent_study_package_code: item.parent_study_package_code, 
+
+        parent_study_package_full_title: item.parent_study_package_full_title 
+
+    }) if ($.username[0] != null), 
+
+    (students: []) if ($.username[0] == null) 
+
+} 
+
+) else [] 

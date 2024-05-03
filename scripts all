@@ -1,0 +1,545 @@
+
+SCRIPT- DDP_Next | Get Next Pagination - SubString After ?
+<<<JAVASCRIPT>>>
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+  var is = dataContext.getStream(i);
+  var props = dataContext.getProperties(i);
+
+  // Retrieve DDP_Next
+  result = props.getProperty("document.dynamic.userdefined.DDP_Next");
+  // Get characters after ?
+  result = result.substring(result.indexOf('?') + 1);
+  // Set DDP_Next to have a value of result 
+  props.setProperty("document.dynamic.userdefined.DDP_Next", result);
+
+  dataContext.storeStream(is, props);
+}
+
+
+
+SCRIPT - Add/Subtract NoOfDays from DPP_LastSuccessfulRunDate
+<<<JAVASCRIPT>>>
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+    
+    // Define the number of days by retrieving DDP value
+    var NoOfDays = props.getProperty("document.dynamic.userdefined.DDP_NoOfDays");
+
+    // Define the math operation by retrieving DDP value
+    var MathOperation = props.getProperty("document.dynamic.userdefined.DDP_MathOperation");
+    
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve Process Property DPP_LastSuccessfulRunDate
+var lastSuccessfulRunDate = new Date(ExecutionUtil.getDynamicProcessProperty("DPP_LastSuccessfulRunDate"));
+
+// Determine whether to add or subtract based on the operation
+if (MathOperation.toLowerCase() === 'add') {
+    // Add the specified number of days to the datetime
+    lastSuccessfulRunDate.setDate(lastSuccessfulRunDate.getDate() + NoOfDays);
+} else if (MathOperation.toLowerCase() === 'subtract') {
+    // Subtract the specified number of days to the datetime
+    lastSuccessfulRunDate.setDate(lastSuccessfulRunDate.getDate() - NoOfDays);
+}
+
+// Set the dppSetDPPName to have a value of lastSuccessfulRunDate after timezone conversion, without persisting
+ExecutionUtil.setDynamicProcessProperty("DPP_LastSuccessfulRunDate", lastSuccessfulRunDate, false);
+
+
+
+SCRIPT  - Calculate Total Successful Documents
+<<<JAVASCRIPT>>>
+
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve current Process Property Value
+var errorDbFailedCounter = ExecutionUtil.getDynamicProcessProperty("DPP_ErrorDbFailedCounter");
+var processedCounter = ExecutionUtil.getDynamicProcessProperty("DPP_ProcessedCounter");
+
+// Calcaulate Total Successful Documents
+var successfulCounter = parseInt(processedCounter) - parseInt(errorDbFailedCounter);
+
+// Set the DPP value, without persisting
+ExecutionUtil.setDynamicProcessProperty("DPP_SuccessfulCounter", successfulCounter, false);
+
+
+
+SCRIPT - Convert DPP_CurrentRunDate Boomi Timezone to Target Timezone
+<<<JAVASCRIPT>>>
+
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+importClass(java.time.OffsetDateTime);
+importClass(java.time.format.DateTimeFormatter);
+importClass(java.time.ZoneId);
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+
+    // Retrieve DDP value
+    var dppTargetZoneId = props.getProperty("document.dynamic.userdefined.DDP_TargetZoneId");
+    var dppSetDPPName = props.getProperty("document.dynamic.userdefined.DDP_SetDPPName");
+
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve Process Property DPP_CurrentRunDate
+var currentRunDate = ExecutionUtil.getDynamicProcessProperty("DPP_CurrentRunDate");
+
+// Parse the input string into an OffsetDateTime
+currentRunDate = OffsetDateTime.parse(currentRunDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"));
+
+// Define the ZoneId for the target time zone
+var targetZoneId = ZoneId.of(dppTargetZoneId);
+
+// Convert the currentRunDate to targetZoneId
+currentRunDate = currentRunDate.atZoneSameInstant(targetZoneId).toOffsetDateTime();
+
+// Define the output pattern to desired format
+var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+// Format the OffsetDateTime to a string
+currentRunDate = currentRunDate.format(outputFormatter);
+
+// Format the converted date and time as a string
+currentRunDate = currentRunDate.toString();
+
+// Set the dppSetDPPName to have a value of currentRunDate after timezone conversion, without persisting
+ExecutionUtil.setDynamicProcessProperty(dppSetDPPName, currentRunDate, false);
+
+
+
+
+SCRIPT  - Convert DPP_LastSuccessfulRunDate Boomi Timezone to Target Timezone
+<<<JAVASCRIPT>>>
+
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+importClass(java.time.OffsetDateTime);
+importClass(java.time.format.DateTimeFormatter);
+importClass(java.time.ZoneId);
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+
+    // Retrieve DDP value
+    var dppTargetZoneId = props.getProperty("document.dynamic.userdefined.DDP_TargetZoneId");
+    var dppSetDPPName = props.getProperty("document.dynamic.userdefined.DDP_SetDPPName");
+
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve Process Property DPP_LastSuccessfulRunDate
+var lastSuccessfulRunDate = ExecutionUtil.getDynamicProcessProperty("DPP_LastSuccessfulRunDate");
+
+// Parse the input string into an OffsetDateTime
+lastSuccessfulRunDate = OffsetDateTime.parse(lastSuccessfulRunDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"));
+
+// Define the ZoneId for the target time zone
+var targetZoneId = ZoneId.of(dppTargetZoneId);
+
+// Convert the lastSuccessfulRunDate to targetZoneId
+lastSuccessfulRunDate = lastSuccessfulRunDate.atZoneSameInstant(targetZoneId).toOffsetDateTime();
+
+// Define the output pattern to desired format
+var outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+// Format the OffsetDateTime to a string
+lastSuccessfulRunDate = lastSuccessfulRunDate.format(outputFormatter);
+
+// Format the converted date and time as a string
+lastSuccessfulRunDate = lastSuccessfulRunDate.toString();
+
+// Set the dppSetDPPName to have a value of lastSuccessfulRunDate after timezone conversion, without persisting
+ExecutionUtil.setDynamicProcessProperty(dppSetDPPName, lastSuccessfulRunDate, false);
+
+
+
+SCRIPT  - DB Batch Calculate DPP_SuccessfulCounter
+<<<JAVASCRIPT>>>
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+
+// Pass documents through...
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+
+    // Retrieve DDP_NoOfRecordInBatch
+    var dppNoOfRecordInBatch = props.getProperty("document.dynamic.userdefined.DDP_NoOfRecordInBatch");
+
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve current Dynamic Process Property Counter
+var dppSuccessfulCounter = ExecutionUtil.getDynamicProcessProperty('DPP_SuccessfulCounter');
+
+// dppSuccessfulCounter +(Add) dppNoOfRecordInBatch
+dppSuccessfulCounter = parseInt(dppSuccessfulCounter) + parseInt(dppNoOfRecordInBatch);
+
+// Set the dynamic process property without persisting
+ExecutionUtil.setDynamicProcessProperty('DPP_SuccessfulCounter', dppSuccessfulCounter, false);
+
+
+SCRIPT  - HTTP Client - Encode Resource Path
+<<<JAVASCRIPT>>>
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+    
+    dataContext.storeStream(is, props);
+}
+
+// Retrieve DDP_ResourcePath
+var stringToEncode = ExecutionUtil.getDynamicProcessProperty('DPP_ResourcePath');
+
+// Encode single quotes
+stringToEncode = stringToEncode.replace(new RegExp("'", "g"), "%27");
+// Encode spaces
+stringToEncode = stringToEncode.replace(new RegExp(" ", "g"), "%20");
+
+// Set the dynamic process property without persisting
+ExecutionUtil.setDynamicProcessProperty('DPP_ResourcePath', stringToEncode, false);
+
+
+SCRIPT [HCM] - HTTP Client - Encode Resource Path [DDP]
+<<<JAVASCRIPT>>>
+
+// Load compatibility script
+load("nashorn:mozilla_compat.js");
+// Load Java classes
+importClass(com.boomi.execution.ExecutionUtil);
+
+// Pass documents through
+for( var i = 0; i < dataContext.getDataCount(); i++ ) {
+    var is = dataContext.getStream(i);
+    var props = dataContext.getProperties(i);
+    
+    // Retrieve DDP_ResourcePath
+    var stringToEncode = props.getProperty("document.dynamic.userdefined.DDP_ResourcePath");
+
+    // Encode single quotes
+    stringToEncode = stringToEncode.replace(new RegExp("'", "g"), "%27");
+    // Encode spaces
+    stringToEncode = stringToEncode.replace(new RegExp(" ", "g"), "%20");
+
+    // Set the dynamic process property without persisting
+
+    props.setProperty("document.dynamic.userdefined.DDP_ResourcePath", stringToEncode);
+    
+    dataContext.storeStream(is, props);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAPSCRIPT - : Epoch In Milliseconds SF Timezone to Datetime Ascender Timezone
+
+//Remove all characters that are not part of the epoch and convert the string to a number
+function extractTimestamp(input) {
+    var regex = /\/Date\((\d+)([+-]\d+)?\)\//;
+    var match = input.match(regex);
+    if (match) {
+        return Number(match[1]); //Returns the timestamp part without the offset
+    }
+    return null;
+}
+
+//Format into the desired format yyyy-mm-dd hh:mm:ss 
+function formatDate(dateString) {
+    var date = new Date(dateString);
+
+    //Pad the month, day, hours, minutes, and seconds with leading zeros if necessary
+    var pad = function(num) {
+        return (num < 10 ? '0' : '') + num;
+    };
+
+    //Format the date
+    var year = date.getFullYear();
+    var month = pad(date.getMonth() + 1); // Months are zero-based in JavaScript
+    var day = pad(date.getDate());
+    var hour = pad(date.getHours());
+    var minute = pad(date.getMinutes());
+    var second = pad(date.getSeconds());
+
+    //Combine components into the desired format
+    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+}
+
+//Get the GMT offset for AEDT or AEST base on dateime
+function isDaylightSavingTimeAedt(dateString) {
+    var date = new Date(dateString);
+    var year = date.getFullYear(); //Get the year
+    var firstOctober = new Date(year, 9, 1); //Find the first Sunday in October
+    var firstApril = new Date(year, 3, 1); //Find the first Sunday in April
+
+    //Get datetime for first Sunday in October
+    var startAedtDst = new Date(firstOctober.setDate(firstOctober.getDate() + (7 - firstOctober.getDay()) % 7));
+    //Get datetime for first Sunday in April
+    var endAedtDst = new Date(firstApril.setDate(firstApril.getDate() + (7 - firstApril.getDay()) % 7));
+
+    if (date >= startAedtDst || date < endAedtDst) {
+        return 'GMT+1100'; //Return AEDT
+    } else {
+        return 'GMT+1000'; //Return AEST
+    }
+}
+
+//Convert epoch milliseconds to date
+datetime = new Date(extractTimestamp(epochInMilliseconds));
+
+//Format date to yyyyy-mm-dd hh:mm:ss
+datetime = datetime.toISOString().replace('T', ' ').replace(/\..+/, '');
+
+
+if (SuccessFactorsTimeZoneId == "Australia/Sydney" || SuccessFactorsTimeZoneId == "Australia/Melbourne") {
+    var getDatetimeGMT = isDaylightSavingTimeAedt(datetime);
+} else {
+    //toLocaleString does not considering the DST for Australia/Sydney
+    //Get the GMT from the timezone using the input epoch datetime
+    var getDatetimeGMT = new Date(datetime);
+    getDatetimeGMT = getDatetimeGMT.toLocaleString("en-AU", {
+      timeZone: SuccessFactorsTimeZoneId, //Set to SuccessFactors Timezone
+      timeZoneName: "longOffset", //Boomi ignores the timeZoneName
+    });
+    getDatetimeGMT = getDatetimeGMT.substring(getDatetimeGMT.indexOf("GMT"));
+}
+
+//Convert to Australia/Brisbane timezone
+datetime = new Date(datetime + " " + getDatetimeGMT);
+datetime = datetime.toLocaleString("en-AU", {
+  timeZone: AscenderOracleDBTimeZoneId, //Set to Ascender Oracle Timezone
+  //Below datetime format doesn't work in Boomi but does for online Javascript editor
+  //year: 'numeric',
+  //month: '2-digit',
+  //day: '2-digit',
+  //hour: '2-digit',
+  //minute: '2-digit',
+  //second: '2-digit',
+  //hour12: false
+});
+
+datetime = formatDate(datetime);
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAPSCRIPT : Epoch In Milliseconds to Datetime
+
+
+
+//Remove all characters that are not part of the epoch and convert the string to a number
+//datetime = Number(epochInMilliseconds.replace(/\/Date\((\d+)\)\//g, "$1"));
+function extractTimestamp(input) {
+    var regex = /\/Date\((\d+)([+-]\d+)?\)\//;
+    var match = input.match(regex);
+    if (match) {
+        return Number(match[1]); // returns the timestamp part without the offset
+    }
+    return null;
+}
+
+//Convert epoch milliseconds to date
+datetime = new Date(extractTimestamp(epochInMilliseconds));
+
+//Format date to yyyyy-mm-dd hh:mm:ss
+datetime = datetime.toISOString().replace('T', ' ').replace(/\..+/, '');
+
+
+
+
+
+
+
+
+
+
+
+
+
+MAPSCRIPT - HCM: Epoch In Milliseconds UTC Offset Timezone to Datetime Ascender Timezone
+
+
+
+//Remove all characters that are not part of the epoch and convert the string to a number
+function extractTimestamp(input) {
+    var regex = /\/Date\((\d+)([+-]\d+)?\)\//;
+    var match = input.match(regex);
+    if (match) {
+        return Number(match[1]); //Returns the timestamp part without the offset
+    }
+    return null;
+}
+
+//Format into the desired format yyyy-mm-dd hh:mm:ss 
+function formatDate(dateString) {
+    var date = new Date(dateString);
+
+    //Pad the month, day, hours, minutes, and seconds with leading zeros if necessary
+    var pad = function(num) {
+        return (num < 10 ? '0' : '') + num;
+    };
+
+    //Format the date
+    var year = date.getFullYear();
+    var month = pad(date.getMonth() + 1); //Months are zero-based in JavaScript
+    var day = pad(date.getDate());
+    var hour = pad(date.getHours());
+    var minute = pad(date.getMinutes());
+    var second = pad(date.getSeconds());
+
+    //Combine components into the desired format
+    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+}
+
+//Convert epoch milliseconds to date
+datetime = new Date(extractTimestamp(epochInMilliseconds));
+
+//Format date to yyyyy-mm-dd hh:mm:ss
+datetime = datetime.toISOString().replace('T', ' ').replace(/\..+/, '');
+
+//Convert UTC to Australia/Brisbane timezone
+datetime = new Date(datetime + " UTC");
+datetime = datetime.toLocaleString("en-AU", {
+  timeZone: AscenderOracleDBTimeZoneId, //Set to Ascender Oracle Timezone
+  //Below datetime format doesn't work in Boomi but does for online Javascript editor
+  //year: 'numeric',
+  //month: '2-digit',
+  //day: '2-digit',
+  //hour: '2-digit',
+  //minute: '2-digit',
+  //second: '2-digit',
+  //hour12: false
+});
+
+datetime = formatDate(datetime);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+order JSONS by lastModifiedDate FIELD
+
+
+
+import java.util.Properties;
+import java.io.InputStream;
+
+import java.util.ArrayList;
+
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Comparator;
+ 
+// Name of Dynamic Document Property that contains the sorting values.
+sortByValuePropName = "DDP_LastModifiedDate";
+
+// Init temp collections
+SortedMap sortedMap = new TreeMap(Comparator.reverseOrder());
+
+
+// Loop through documents and store the sort-by-values and document indices in the sortedMap.
+
+for ( int i = 0; i < dataContext.getDataCount(); i++ ) {
+  Properties props = dataContext.getProperties(i);
+  String sortByValue = props.getProperty("document.dynamic.userdefined." + sortByValuePropName) + "_" + i;
+  sortedMap.put(sortByValue, new Integer(i));
+}
+
+// Retrieve the sorted values.
+Collection sortedValues = sortedMap.values();
+
+// Loop through sorted results to output documents for the next process shape
+Iterator iterator = sortedValues.iterator();
+ 
+while (iterator.hasNext()) {
+  int i = ((Integer)iterator.next()).intValue();
+
+  dataContext.storeStream(dataContext.getStream(i), dataContext.getProperties(i));
+}
